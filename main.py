@@ -1,8 +1,54 @@
+%%writefile app.py
 import streamlit as st
 import tensorflow as tf
 import numpy as np
 from PIL import Image
 import os
+
+st.set_page_config(page_title="Plant Disease Recognition", layout="centered")
+
+# -----------------------------
+# Load model safely
+# -----------------------------
+MODEL_PATH = "plant_disease_model.keras"
+model = None
+
+if os.path.exists(MODEL_PATH):
+    try:
+        model = tf.keras.models.load_model(MODEL_PATH)
+        st.success("Model loaded successfully ✅")
+    except Exception as e:
+        st.error(f"Failed to load model: {e}")
+else:
+    st.warning(f"Model file not found at '{MODEL_PATH}'! Please upload the correct model.")
+
+# -----------------------------
+# Prediction function
+# -----------------------------
+def model_prediction(image_file):
+    if model is None:
+        st.error("Model is not loaded!")
+        return None
+
+    try:
+        image = Image.open(image_file).convert("RGB")
+        image = image.resize((128, 128))
+        input_arr = tf.keras.preprocessing.image.img_to_array(image)
+        input_arr = np.expand_dims(input_arr, axis=0)
+        prediction = model.predict(input_arr)
+        result_index = np.argmax(prediction)
+        return result_index
+    except Exception as e:
+        st.error(f"Prediction failed: {e}")
+        return None
+
+# -----------------------------
+# Sidebar navigation
+# -----------------------------
+st.sidebar.title("Dashboard")
+app_mode = st.sidebar.selectbox("Select page", ["Home", "About", "Disease Recognition"])
+
+
 if app_mode == "Home":
     st.markdown(
         """
