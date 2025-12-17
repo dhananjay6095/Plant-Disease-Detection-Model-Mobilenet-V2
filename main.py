@@ -1,3 +1,4 @@
+%%writefile main.py
 import streamlit as st
 import tensorflow as tf
 import numpy as np
@@ -47,50 +48,66 @@ def model_prediction(image_file):
 st.sidebar.title("Dashboard")
 app_mode = st.sidebar.selectbox("Select page", ["Home", "About", "Disease Recognition"])
 
-
+# -----------------------------
+# Home Page
+# -----------------------------
 if app_mode == "Home":
-    st.markdown(
-        """
-        <style>
-        .main-header {
-            font-size: 38px;
-            color: #2E8B57;
-            font-weight: bold;
-            text-align: center;
-        }
-        .sub-header {
-            font-size: 20px;
-            text-align: center;
-            color: #555555;
-        }
-        .steps {
-            background-color: #f0f8ff;
-            padding: 20px;
-            border-radius: 15px;
-            margin-top: 20px;
-        }
-        .step {
-            font-size: 18px;
-            margin: 10px 0;
-        }
-        </style>
-        """, unsafe_allow_html=True
-    )
+    st.header("PLANT DISEASE RECOGNITION SYSTEM 🌿")
+    image_path="https://cdn.mos.cms.futurecdn.net/CKiu992oijYxcPJVyuuCWL-1280-80.jpg.webp"
+    st.image(image_path,use_column_width=True)
+    st.markdown("""
+    Welcome to the Plant Disease Recognition System!
 
-    st.markdown('<div class="main-header">🌿 Plant Disease Recognition System 🌿</div>', unsafe_allow_html=True)
-    st.markdown('<div class="sub-header">AI-powered tool to detect plant diseases instantly!</div>', unsafe_allow_html=True)
+    **How It Works:**
+    1️⃣ Upload a plant leaf image
+    2️⃣ The model analyzes it
+    3️⃣ Get the predicted disease class
 
-    # Add a two-column layout
-    col1, col2 = st.columns([2, 3])
-    with col1:
-        st.image("https://cdn.mos.cms.futurecdn.net/CKiu992oijYxcPJVyuuCWL-1280-80.jpg.webp", use_column_width=True)
-    with col2:
-        st.markdown('<div class="steps">', unsafe_allow_html=True)
-        st.markdown('<div class="step">1️⃣ Upload a leaf image of your plant</div>', unsafe_allow_html=True)
-        st.markdown('<div class="step">2️⃣ The AI model analyzes the leaf</div>', unsafe_allow_html=True)
-        st.markdown('<div class="step">3️⃣ Get the predicted disease instantly</div>', unsafe_allow_html=True)
-        st.markdown('<div class="step">4️⃣ Take necessary actions to protect your crop!</div>', unsafe_allow_html=True)
-        st.markdown('</div>', unsafe_allow_html=True)
+    Navigate to **Disease Recognition** to try it out!
+    """)
 
-    st.markdown("---")
-    st.markdown("💡 **Tip:** Navigate to **Disease Recognition** in the sidebar to try it out!")
+# -----------------------------
+# About Page
+# -----------------------------
+elif app_mode == "About":
+    st.header("About Dataset & Project")
+    st.markdown("""
+    This dataset contains 87K images of healthy & diseased crop leaves
+    categorized into 38 classes. It is split into 80/20 training & validation.
+
+    Our project aims to help farmers and researchers quickly detect plant diseases using AI.
+    """)
+
+# -----------------------------
+# Disease Recognition Page
+# -----------------------------
+elif app_mode == "Disease Recognition":
+    st.header("Disease Recognition")
+    uploaded_file = st.file_uploader("Upload a leaf image:", type=["jpg", "png", "jpeg"])
+
+    if uploaded_file is not None:
+        st.image(uploaded_file, caption="Uploaded Image", use_column_width=True)
+
+        if st.button("Predict"):
+            with st.spinner("Predicting..."):
+                result_index = model_prediction(uploaded_file)
+
+                if result_index is not None:
+                    class_names = [
+                        'Apple___Apple_scab', 'Apple___Black_rot', 'Apple___Cedar_apple_rust', 'Apple___healthy',
+                        'Blueberry___healthy', 'Cherry_(including_sour)___Powdery_mildew',
+                        'Cherry_(including_sour)___healthy', 'Corn_(maize)___Cercospora_leaf_spot Gray_leaf_spot',
+                        'Corn_(maize)___Common_rust_', 'Corn_(maize)___Northern_Leaf_Blight', 'Corn_(maize)___healthy',
+                        'Grape___Black_rot', 'Grape___Esca_(Black_Measles)',
+                        'Grape___Leaf_blight_(Isariopsis_Leaf_Spot)', 'Grape___healthy',
+                        'Orange___Haunglongbing_(Citrus_greening)', 'Peach___Bacterial_spot', 'Peach___healthy',
+                        'Pepper,_bell___Bacterial_spot', 'Pepper,_bell___healthy', 'Potato___Early_blight',
+                        'Potato___Late_blight', 'Potato___healthy', 'Raspberry___healthy', 'Soybean___healthy',
+                        'Squash___Powdery_mildew', 'Strawberry___Leaf_scorch', 'Strawberry___healthy',
+                        'Tomato___Bacterial_spot', 'Tomato___Early_blight', 'Tomato___Late_blight', 'Tomato___Leaf_Mold',
+                        'Tomato___Septoria_leaf_spot', 'Tomato___Spider_mites Two-spotted_spider_mite',
+                        'Tomato___Target_Spot', 'Tomato___Tomato_Yellow_Leaf_Curl_Virus',
+                        'Tomato___Tomato_mosaic_virus', 'Tomato___healthy'
+                    ]
+
+                    st.success(f"Model Prediction: **{class_names[result_index]}** 🌿")
