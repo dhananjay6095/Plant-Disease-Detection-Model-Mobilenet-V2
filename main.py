@@ -32,7 +32,7 @@ def model_prediction(image_file):
 
     try:
         image = Image.open(image_file).convert("RGB")
-        image = image.resize((128, 128))
+        image = image.resize((224,224))
         input_arr = tf.keras.preprocessing.image.img_to_array(image)
         input_arr = np.expand_dims(input_arr, axis=0)
         prediction = model.predict(input_arr)
